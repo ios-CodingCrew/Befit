@@ -10,16 +10,23 @@ import UIKit
 class SignupViewController: UIViewController {
 
     @IBOutlet weak var usernameField: UITextField!
-    
-    
     @IBOutlet weak var emailField: UITextField!
-    
-    
     @IBOutlet weak var ppasswordField: UITextField!
+    
+    
+    @IBOutlet weak var signupLabel: UILabel!
+    @IBOutlet weak var toLabel: UILabel!
+    @IBOutlet weak var unlockLabel: UILabel!
+    @IBOutlet weak var fullLabel: UILabel!
+    @IBOutlet weak var potentialLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        signupLabel.textColor = UIColor.white
+        toLabel.textColor = UIColor.white
+        unlockLabel.textColor = UIColor(red: 0.0/255.0, green: 223.0/255.0, blue: 213.0/255.0, alpha: 1.0)
+        fullLabel.textColor = UIColor.white
+        potentialLabel.textColor = UIColor.white
         // Do any additional setup after loading the view.
     }
     

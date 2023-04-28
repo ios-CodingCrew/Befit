@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A822E4EB29FA49D600DFD1A6 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A822E4EA29FA49D600DFD1A6 /* RoundedCornerView.swift */; };
+		A848AC1229F9C3DF002E2EB1 /* CalendarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A848AC1129F9C3DF002E2EB1 /* CalendarCell.swift */; };
+		A848AC1429F9C842002E2EB1 /* CalendarHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A848AC1329F9C842002E2EB1 /* CalendarHelper.swift */; };
 		A87C515229F7BABF00888F29 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87C515129F7BABF00888F29 /* User.swift */; };
 		A87C515629F7BE0B00888F29 /* TrackActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87C515529F7BE0B00888F29 /* TrackActivityViewController.swift */; };
 		A87C515829F7BE2000888F29 /* CheckinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87C515729F7BE2000888F29 /* CheckinViewController.swift */; };
@@ -29,6 +32,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A822E4EA29FA49D600DFD1A6 /* RoundedCornerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornerView.swift; sourceTree = "<group>"; };
+		A848AC1129F9C3DF002E2EB1 /* CalendarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarCell.swift; sourceTree = "<group>"; };
+		A848AC1329F9C842002E2EB1 /* CalendarHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarHelper.swift; sourceTree = "<group>"; };
 		A87C515129F7BABF00888F29 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		A87C515529F7BE0B00888F29 /* TrackActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackActivityViewController.swift; sourceTree = "<group>"; };
 		A87C515729F7BE2000888F29 /* CheckinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckinViewController.swift; sourceTree = "<group>"; };
@@ -63,6 +69,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A848AC1029F9C3CA002E2EB1 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				A848AC1129F9C3DF002E2EB1 /* CalendarCell.swift */,
+				A848AC1329F9C842002E2EB1 /* CalendarHelper.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
 		A87C514229F7A23B00888F29 /* Login */ = {
 			isa = PBXGroup;
 			children = (
@@ -86,7 +101,9 @@
 		A87C514829F7B9BA00888F29 /* Playground */ = {
 			isa = PBXGroup;
 			children = (
+				A848AC1029F9C3CA002E2EB1 /* Calendar */,
 				A87C515929F7BE3100888F29 /* PlayGroundViewController.swift */,
+				A822E4EA29FA49D600DFD1A6 /* RoundedCornerView.swift */,
 			);
 			path = Playground;
 			sourceTree = "<group>";
@@ -243,8 +260,11 @@
 				A8D22B8029E67BE3006C399C /* MonthLabelCell.swift in Sources */,
 				A8D22B8229E68CB8006C399C /* ContributionCell.swift in Sources */,
 				A8D22B7C29E63156006C399C /* WorkoutData.swift in Sources */,
+				A822E4EB29FA49D600DFD1A6 /* RoundedCornerView.swift in Sources */,
 				A8E8781429E4BDF9008A9ECD /* ViewController.swift in Sources */,
 				A87C516629F8813800888F29 /* VCextension.swift in Sources */,
+				A848AC1429F9C842002E2EB1 /* CalendarHelper.swift in Sources */,
+				A848AC1229F9C3DF002E2EB1 /* CalendarCell.swift in Sources */,
 				A8D22B7929E630D1006C399C /* GraphViewController.swift in Sources */,
 				A87C515A29F7BE3100888F29 /* PlayGroundViewController.swift in Sources */,
 				A87C515629F7BE0B00888F29 /* TrackActivityViewController.swift in Sources */,

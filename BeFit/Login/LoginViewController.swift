@@ -14,9 +14,18 @@ class LoginViewController: UIViewController {
     
     @IBOutlet weak var passwordTextfield: UITextField!
     
+    
+    @IBOutlet weak var titleLabel: UILabel!
+    
+    @IBOutlet weak var introLabel: UILabel!
+    
+    @IBOutlet weak var queLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        titleLabel.textColor = UIColor.white
+        introLabel.textColor = UIColor.white
+        queLabel.textColor = UIColor.white
         // Do any additional setup after loading the view.
     }
     
