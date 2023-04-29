@@ -6,14 +6,30 @@
 //
 
 import Foundation
+import ParseSwift
+
+//struct WorkoutData {
+//    var userid: Int?
+//    var workout_id: Int?
+//    var workout_date: Date?
+//    var workout_type: String?
+//    var duration: Int? //dutation is expected in mins, so int should be fine
+//
+//    //var workoutCount: Int
+//}
 
 
-struct WorkoutData {
+
+struct WorkoutData: ParseObject {
+    var objectId: String?
+    var createdAt: Date?
+    var updatedAt: Date?
+    var ACL: ParseACL?
+    var originalData: Data?
+    
     var userid: Int?
     var workout_id: Int?
     var workout_date: Date?
     var workout_type: String?
-    var duration: Int? //dutation is expected in mins, so int should be fine
-    
-    //var workoutCount: Int
+    var duration: Int?
 }

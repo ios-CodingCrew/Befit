@@ -7,6 +7,7 @@
 
 import UIKit
 import QuartzCore
+import ParseSwift
 
 class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -34,24 +35,15 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = view.bounds
         gradientLayer.colors = [
-            UIColor(red: 217/255, green: 164/255, blue: 159/255, alpha: 1).cgColor,
-            UIColor(red: 70/255, green: 196/255, blue: 187/255, alpha: 1).cgColor
+//            UIColor(red: 217/255, green: 164/255, blue: 159/255, alpha: 1).cgColor,
+//            UIColor(red: 70/255, green: 196/255, blue: 187/255, alpha: 1).cgColor
+            UIColor(red: 89/255, green: 182/255, blue: 192/255, alpha: 1).cgColor,
+            UIColor(red: 224/255, green: 232/255, blue: 233/255, alpha: 1).cgColor
         ]
         gradientLayer.startPoint = CGPoint(x: 0, y: 1)
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
         view.layer.insertSublayer(gradientLayer, at: 0)
 
-        
-//        let gradientLayer = CAGradientLayer()
-//        gradientLayer.frame = bgView.bounds
-//        gradientLayer.colors = [
-//            UIColor(red: 217/255, green: 164/255, blue: 159/255, alpha: 1).cgColor,
-//            UIColor(red: 70/255, green: 196/255, blue: 187/255, alpha: 1).cgColor
-//        ]
-//        gradientLayer.startPoint = CGPoint(x: 0, y: 1)
-//        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
-//        bgView.layer.insertSublayer(gradientLayer, at: 0)
-//        bgView.layer.cornerRadius = 20
         
         collectionView.layer.cornerRadius = 10
         collectionView.clipsToBounds = true
@@ -60,7 +52,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         secImageview.layer.cornerRadius = 10
         thirdImageview.layer.cornerRadius = 10
         
-        //add text
+        //set up navigation bar: add text
         let labelText = "Welcome Back!"
         let label = UILabel()
         label.text = labelText
@@ -70,6 +62,9 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         let leftBarItem = UIBarButtonItem(customView: label)
         navigationItem.leftBarButtonItem = leftBarItem
         
+        //set up 'log out' button
+
+
         //set up segmented control
         let font = UIFont(name: "Verdana", size: 16) ?? UIFont.systemFont(ofSize: 16) // Use Impact font or fall back to system font if not available
            let textColor: UIColor = .white // Choose your desired text color
@@ -140,8 +135,9 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         
         //TODO: set backgound color corresonding to workout time
         if(totalSquares[indexPath.item] == ""){
-            cell.backgroundColor =  UIColor(red: 235.0/255.0, green: 237.0/255.0, blue: 240.0/255.0, alpha: 1.0)
+            cell.backgroundColor =  UIColor(red: 235.0/255.0, green: 237.0/255.0, blue: 240.0/255.0, alpha: 0.0)
         }else{
+            //TODO: decide color here
             cell.backgroundColor = UIColor.systemMint
         }
         
@@ -170,6 +166,14 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
 //    }
 
     
+    @IBAction func toCheckin(_ sender: Any) {
+        performSegue(withIdentifier: "toCheckin", sender: nil)
+    }
+    
+    @IBAction func toTrack(_ sender: Any) {
+        performSegue(withIdentifier: "toTrack", sender: nil)
+    }
+    
     
     @IBAction func previousMonth(_ sender: Any) {
         selectedDate = CalendarHelper().minusMonth(date: selectedDate)
@@ -190,6 +194,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         showConfirmLogoutAlert()
     }
     
+    
     private func showConfirmLogoutAlert() {
         let alertController = UIAlertController(title: "Log out of \(User.current?.username ?? "current account")?", message: nil, preferredStyle: .alert)
         let logOutAction = UIAlertAction(title: "Log out", style: .destructive) { _ in
@@ -202,14 +207,13 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     
-    @IBAction func onCheckinTapped(_ sender: Any) {
+    @IBAction func unwindToPlaygroundVC(segue: UIStoryboardSegue) {
         
     }
-    
-    
-    @IBAction func onTrackTapped(_ sender: Any) {
+
+    @IBAction func backToPlaygroundVC(segue: UIStoryboardSegue) {
         
     }
-    
+
 
 }
