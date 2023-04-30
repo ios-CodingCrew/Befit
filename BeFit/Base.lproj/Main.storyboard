@@ -100,7 +100,7 @@
                                             <constraint firstAttribute="width" constant="289" id="w6Q-rD-ywJ"/>
                                         </constraints>
                                         <attributedString key="attributedText"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6t0-jV-Gyf">
                                         <rect key="frame" x="0.0" y="112" width="289" height="34"/>
@@ -376,7 +376,7 @@
                                             <constraint firstAttribute="height" constant="34" id="Xph-xK-sVG"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sKW-tE-aU8">
                                         <rect key="frame" x="0.0" y="165" width="320" height="34"/>
@@ -791,6 +791,9 @@
                                 </segments>
                                 <color key="tintColor" systemColor="systemMintColor"/>
                                 <color key="selectedSegmentTintColor" red="0.82428944110000002" green="0.65219175819999997" blue="0.6263450384" alpha="0.95216450470172809" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <action selector="timeSegmentChanged:" destination="fLD-6X-15a" eventType="valueChanged" id="ZcX-OF-Dnd"/>
+                                </connections>
                             </segmentedControl>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="6mh-sK-b9F">
                                 <rect key="frame" x="8" y="507" width="377" height="128"/>
@@ -832,7 +835,7 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jH7-22-Kfl">
                                 <rect key="frame" x="20" y="537" width="79" height="88"/>
                                 <attributedString key="attributedText">
-                                    <fragment content="4">
+                                    <fragment content="44">
                                         <attributes>
                                             <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <font key="NSFont" size="72" name="Impact"/>
@@ -908,10 +911,17 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dzD-Ww-2i8">
                                 <rect key="frame" x="177.33333333333337" y="516" width="195.66666666666663" height="85"/>
                                 <attributedString key="attributedText">
-                                    <fragment content="8 hr 40 min">
+                                    <fragment content="8 .3hr">
                                         <attributes>
                                             <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <font key="NSFont" size="43" name="Impact"/>
+                                            <font key="NSFont" size="64" name="Impact"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content=" ">
+                                        <attributes>
+                                            <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                            <font key="NSFont" size="64" name="Impact"/>
                                             <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                         </attributes>
                                     </fragment>

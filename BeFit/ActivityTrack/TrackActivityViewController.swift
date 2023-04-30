@@ -71,7 +71,6 @@ class TrackActivityViewController: UIViewController{
             return
         }
         
-   
         
         //TODO: save info to database
         if let currentUser = User.current {
@@ -104,6 +103,7 @@ class TrackActivityViewController: UIViewController{
             switch result {
             case .success(let savedWorkoutData):
                 print("Workout data saved successfully: \(savedWorkoutData)")
+                self.delegate?.didSaveWorkoutData()
                 completion(true, nil)
             case .failure(let error):
                 print("Error saving workout data: \(error.localizedDescription)")

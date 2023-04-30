@@ -9,7 +9,7 @@ import UIKit
 import QuartzCore
 import ParseSwift
 
-class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TrackActivityDelegate {
+class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TrackActivityDelegate, CheckinViewControllerDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var monthLabel: UILabel!
@@ -30,6 +30,8 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     
     var selectedDate = Date()
     var totalSquares = [String]()
+    var selectedSegmentIndex: Int = 0
+
     
     //private let containerView = RoundedCornerView()
     
@@ -84,42 +86,15 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         setMonthView()
         
         var name = ""
-        var totalTime = 0
+        
+        updateWorkoutData()
+        updateCheckinTimes()
         if let currentUser = User.current {
-            let user = currentUser
-            name = user.username ?? ""
-            getDailyWorkoutTime(for: user) { dailyTime, error in
-                if let dailyTime = dailyTime {
-                    DispatchQueue.main.async {
-                        self.timeSpent.text = "\(dailyTime) min"
-                    }
-                   // totalTime = dailyTime
-                    print("Daily workout time: \(dailyTime) minutes")
-                } else {
-                    print("Error fetching daily workout time: \(error?.localizedDescription ?? "Unknown error")")
-                }
-            }
-
-//            getMonthlyWorkoutTime(for: user) { monthlyTime, error in
-//                if let monthlyTime = monthlyTime {
-//                    print("Monthly workout time: \(monthlyTime) minutes")
-//                } else {
-//                    print("Error fetching monthly workout time: \(error?.localizedDescription ?? "Unknown error")")
-//                }
-//            }
-//
-//            getYearlyWorkoutTime(for: user) { yearlyTime, error in
-//                if let yearlyTime = yearlyTime {
-//                    print("Yearly workout time: \(yearlyTime) minutes")
-//                } else {
-//                    print("Error fetching yearly workout time: \(error?.localizedDescription ?? "Unknown error")")
-//                }
-//            }
+            name = currentUser.username ?? ""
         } else {
             print("No current user is logged in")
         }
 
-        
         //set up navigation bar: add text
         var labelText = ""
         if(name == ""){
@@ -135,14 +110,13 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         
         let leftBarItem = UIBarButtonItem(customView: label)
         navigationItem.leftBarButtonItem = leftBarItem
-        
-        //set up display
-       // timeSpent.text = "\(totalTime) min"
 
         
         
     }
+
     
+    //set up calendar view
     func setCellsView(){
         print("frames' w: \(collectionView.frame.size.width) and h: \(collectionView.frame.size.height)")
         let width = (collectionView.frame.size.width-50)/7
@@ -178,8 +152,13 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         collectionView.reloadData()
     }
     
-
-    func getDailyWorkoutTime(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+    //helper funtion for daily/monthly/yearly
+    func formatDurationInHours(_ duration: Int) -> String {
+        let hours = Double(duration) / 60.0
+        return String(format: "%.1f hr", hours)
+    }
+ 
+    func getDailyWorkoutTime(for user: User, completion: @escaping (String?, Int?, Error?) -> Void) {
         let now = Date()
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: now)
@@ -193,15 +172,18 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
             switch results {
             case .success(let workoutDataArray):
                 let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
-                completion(totalTime, nil)
-                print("daily time duration: \(totalTime)")
+                let res = self.formatDurationInHours(totalTime)
+                let totalCalories = workoutDataArray.compactMap { $0.calories_burnt }.reduce(0, +)
+                completion(res, totalCalories, nil)
+                print("daily time duration: \(totalTime), daily calories burnt: \(totalCalories)")
             case .failure(let error):
-                completion(nil, error)
+                completion(nil, nil, error)
             }
         }
     }
 
-    func getMonthlyWorkoutTime(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+
+    func getMonthlyWorkoutTime(for user: User, completion: @escaping (String?, Int?, Error?) -> Void) {
         let now = Date()
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: now)
@@ -216,15 +198,17 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
             switch results {
             case .success(let workoutDataArray):
                 let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
-                completion(totalTime, nil)
-                print("monthly time duration: \(totalTime)")
+                let res = self.formatDurationInHours(totalTime)
+                let totalCalories = workoutDataArray.compactMap { $0.calories_burnt }.reduce(0, +)
+                completion(res, totalCalories, nil)
+                print("monthly time duration: \(totalTime), daily calories burnt: \(totalCalories)")
             case .failure(let error):
-                completion(nil, error)
+                completion(nil, nil, error)
             }
         }
     }
 
-    func getYearlyWorkoutTime(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+    func getYearlyWorkoutTime(for user: User, completion: @escaping (String?, Int?, Error?) -> Void) {
         let now = Date()
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year], from: now)
@@ -239,35 +223,265 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
             switch results {
             case .success(let workoutDataArray):
                 let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
-                completion(totalTime, nil)
-                print("yearly time duration: \(totalTime)")
+                let res = self.formatDurationInHours(totalTime)
+                let totalCalories = workoutDataArray.compactMap { $0.calories_burnt }.reduce(0, +)
+                completion(res, totalCalories, nil)
+                print("yearly time duration: \(totalTime), daily calories burnt: \(totalCalories)")
             case .failure(let error):
-                completion(nil, error)
+                completion(nil, nil, error)
             }
         }
     }
     
+    
+    //helper funtion for query checkin times:
+    func fetchDailyCheckinTimes(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+        let now = Date()
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: now)
+        //let startOfNextDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        // Convert dates to UTC timezone
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        
+        let startOfDayInUTC = dateFormatter.string(from: startOfDay)
+        let startOfNextDayInUTC = dateFormatter.string(from: now)
+        
+        let startOfDayUTC = dateFormatter.date(from: startOfDayInUTC)
+        let startOfNextDayUTC = dateFormatter.date(from: startOfNextDayInUTC)
+        
+        print("Start of day: \(startOfDayUTC!)") // Update this line
+        print("Start of next day: \(startOfNextDayUTC!)") // Update this line
+        
+        let query = WorkoutCount.query()
+            .where("userid" == user.userid)
+            .where("workout_date" >= startOfDayUTC!)
+            .where("workout_date" < startOfNextDayUTC!)
+        
+        query.find { result in
+            switch result {
+            case .success(let workoutCounts):
+                print("Fetched workoutCounts: \(workoutCounts)") // Add this line
+                let totalCheckins = workoutCounts.reduce(0) { $0 + ($1.checkin_count ?? 0) }
+                completion(totalCheckins, nil)
+                print("daily checkedin times: \(totalCheckins)")
+            case .failure(let error):
+                print("Error fetching check-in times: \(error)")
+                completion(nil, error)
+            }
+        }
+    }
+
+
+    
+    func fetchMonthlyCheckinTimes(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+        let now = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month], from: now)
+        guard let startOfMonth = calendar.date(from: components) else {
+            completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to calculate start of month"]))
+            return
+        }
+        
+        // Convert dates to UTC timezone
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        
+        let startOfMonthInUTC = dateFormatter.string(from: startOfMonth)
+        let nowInUTC = dateFormatter.string(from: now)
+        
+        let startOfMonthUTC = dateFormatter.date(from: startOfMonthInUTC)
+        let nowUTC = dateFormatter.date(from: nowInUTC)
+        
+        print("Start of month: \(startOfMonthUTC!)") // Update this line
+        print("Now: \(nowUTC!)") // Update this line
+        
+        let query = WorkoutCount.query()
+            .where("userid" == user.userid)
+            .where("workout_date" >= startOfMonthUTC!)
+            .where("workout_date" <= nowUTC!)
+        
+        query.find { result in
+            switch result {
+            case .success(let workoutCounts):
+                print("Fetched workoutCounts: \(workoutCounts)") // Add this line
+                let totalCheckins = workoutCounts.reduce(0) { $0 + ($1.checkin_count ?? 0) }
+                completion(totalCheckins, nil)
+                print("monthly checkedin times: \(totalCheckins)")
+            case .failure(let error):
+                print("Error fetching check-in times: \(error)")
+                completion(nil, error)
+            }
+        }
+    }
+
+
+
+    func fetchYearlyCheckinTimes(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+        let now = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year], from: now)
+        guard let startOfYear = calendar.date(from: components) else {
+            completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to calculate start of year"]))
+            return
+        }
+        
+        // Convert dates to UTC timezone
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        
+        let startOfYearInUTC = dateFormatter.string(from: startOfYear)
+        let nowInUTC = dateFormatter.string(from: now)
+        
+        let startOfYearUTC = dateFormatter.date(from: startOfYearInUTC)
+        let nowUTC = dateFormatter.date(from: nowInUTC)
+        
+        print("Start of year: \(startOfYearUTC!)") // Update this line
+        print("Now: \(nowUTC!)") // Update this line
+        
+        let query = WorkoutCount.query()
+            .where("userid" == user.userid)
+            .where("workout_date" >= startOfYearUTC!)
+            .where("workout_date" <= nowUTC!)
+        
+        query.find { result in
+            switch result {
+            case .success(let workoutCounts):
+                print("Fetched workoutCounts: \(workoutCounts)") // Add this line
+                let totalCheckins = workoutCounts.reduce(0) { $0 + ($1.checkin_count ?? 0) }
+                completion(totalCheckins, nil)
+                print("yearly checkedin times: \(totalCheckins)")
+            case .failure(let error):
+                print("Error fetching check-in times: \(error)")
+                completion(nil, error)
+            }
+        }
+    }
+
+    
+    //update workoutdata
     func didSaveWorkoutData() {
-           // Update timeSpent.text here
-        let user1 = User.current
-        var totalTime = 0
+        //update workoudata here
+//        DispatchQueue.main.async {
+//               // Update your UILabel with the new check-in times
+//               self.timeSpent.text = "44"
+//        }
+        updateWorkoutData()
+    }
+    
+    func updateWorkoutData(){
+        let currentDate = Date()
         if let currentUser = User.current {
             let user = currentUser
-            getDailyWorkoutTime(for: user) { dailyTime, error in
-                if let dailyTime = dailyTime {
+            
+            switch selectedSegmentIndex {
+            case 0: // Daily
+                getDailyWorkoutTime(for: user) { (totalTimes, calBurnt, error) in
                     DispatchQueue.main.async {
-                        self.timeSpent.text = "\(dailyTime) min"
+                        if let time = totalTimes, let cal = calBurnt {
+                            self.timeSpent.text = "\(time)"
+                            self.calBurnt.text = "\(cal)🔥"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                        }
                     }
-                   // totalTime = dailyTime
-                    print("Daily workout time: \(dailyTime) minutes")
-                } else {
-                    print("Error fetching daily workout time: \(error?.localizedDescription ?? "Unknown error")")
                 }
-            }
 
+            case 1: // Monthly
+                getMonthlyWorkoutTime(for: user) { (totalTimes, calBurnt, error) in
+                    DispatchQueue.main.async {
+                        if let time = totalTimes, let cal = calBurnt {
+                            self.timeSpent.text = "\(time)"
+                            self.calBurnt.text = "\(cal)🔥"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                        }
+                    }
+                }
+
+            case 2: // Yearly
+                getYearlyWorkoutTime(for: user) { (totalTimes, calBurnt, error) in
+                    DispatchQueue.main.async {
+                        if let time = totalTimes, let cal = calBurnt {
+                            self.timeSpent.text = "\(time)"
+                            self.calBurnt.text = "\(cal)🔥"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                        }
+                    }
+                }
+
+            default:
+                break
+            }
         } else {
             print("No current user is logged in")
         }
+    }
+    
+ 
+    //update check-in data
+    func checkinViewControllerDidSaveCheckin() {
+        updateCheckinTimes()
+    }
+
+    func updateCheckinTimes() {
+        // Fetch the updated checkin_count from the database
+        // and update the text field with the new value
+        
+        let currentDate = Date()
+        if let currentUser = User.current {
+            let user = currentUser
+            
+            switch selectedSegmentIndex {
+            case 0: // Daily
+                fetchDailyCheckinTimes(for: user) { (checkinCount, error) in
+                    DispatchQueue.main.async {
+                        if let count = checkinCount {
+                            self.checkinTimes.text = "\(count)"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                            self.checkinTimes.text = "Error"
+                        }
+                    }
+                }
+
+            case 1: // Monthly
+                fetchMonthlyCheckinTimes(for: user) { (checkinCount, error) in
+                    DispatchQueue.main.async {
+                        if let count = checkinCount {
+                            self.checkinTimes.text = "\(count)"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                            self.checkinTimes.text = "Error"
+                        }
+                    }
+                }
+
+            case 2: // Yearly
+                fetchYearlyCheckinTimes(for: user) { (checkinCount, error) in
+                    DispatchQueue.main.async {
+                        if let count = checkinCount {
+                            self.checkinTimes.text = "\(count)"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                            self.checkinTimes.text = "Error"
+                        }
+                    }
+                }
+
+            default:
+                break
+            }
+        } else {
+            print("No current user is logged in")
+        }
+
+        
     }
 
     
@@ -286,6 +500,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
             cell.backgroundColor =  UIColor(red: 235.0/255.0, green: 237.0/255.0, blue: 240.0/255.0, alpha: 0.0)
         }else{
             //TODO: decide color here
+            
             cell.backgroundColor = UIColor.systemMint
         }
         
@@ -313,12 +528,23 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
 //        return CGSize(width: width-4, height: height-4)
 //    }
 
+    
+    //perform segue navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
           if segue.identifier == "toTrack" {
               if let trackActivityVC = segue.destination as? TrackActivityViewController {
                   trackActivityVC.delegate = self
               }
           }
+        
+        if segue.identifier == "toCheckin" {
+            if let checkinViewController = segue.destination as? CheckinViewController {
+                 checkinViewController.dbdelegate = self
+             }
+            
+        }
+    
+        
       }
     
     @IBAction func toCheckin(_ sender: Any) {
@@ -329,7 +555,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         performSegue(withIdentifier: "toTrack", sender: nil)
     }
     
-    
+    //some button funtions
     @IBAction func previousMonth(_ sender: Any) {
         selectedDate = CalendarHelper().minusMonth(date: selectedDate)
         setMonthView()
@@ -345,6 +571,97 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     
+    @IBAction func timeSegmentChanged(_ sender: UISegmentedControl) {
+        selectedSegmentIndex = sender.selectedSegmentIndex
+        //TODO: change to selected date
+        let currentDate = Date()
+
+        if let currentUser = User.current {
+            let user = currentUser
+            
+            switch sender.selectedSegmentIndex {
+            case 0: // Daily
+                fetchDailyCheckinTimes(for: user) { (checkinCount, error) in
+                    DispatchQueue.main.async {
+                        if let count = checkinCount {
+                            self.checkinTimes.text = "\(count)"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                            self.checkinTimes.text = "Error"
+                        }
+                    }
+                }
+                
+                getDailyWorkoutTime(for: user) { (totalTimes, calBurnt, error) in
+                    DispatchQueue.main.async {
+                        if let time = totalTimes, let cal = calBurnt {
+                            self.timeSpent.text = "\(time)"
+                            self.calBurnt.text = "\(cal)🔥"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                        }
+                    }
+                }
+
+            case 1: // Monthly
+                fetchMonthlyCheckinTimes(for: user) { (checkinCount, error) in
+                    DispatchQueue.main.async {
+                        if let count = checkinCount {
+                            self.checkinTimes.text = "\(count)"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                            self.checkinTimes.text = "Error"
+                        }
+                    }
+                }
+                
+                getMonthlyWorkoutTime(for: user) { (totalTimes, calBurnt, error) in
+                    DispatchQueue.main.async {
+                        if let time = totalTimes, let cal = calBurnt {
+                            self.timeSpent.text = "\(time)"
+                            self.calBurnt.text = "\(cal)🔥"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                        }
+                    }
+                }
+
+            case 2: // Yearly
+                fetchYearlyCheckinTimes(for: user) { (checkinCount, error) in
+                    DispatchQueue.main.async {
+                        if let count = checkinCount {
+                            self.checkinTimes.text = "\(count)"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                            self.checkinTimes.text = "Error"
+                        }
+                    }
+                }
+                
+                getYearlyWorkoutTime(for: user) { (totalTimes, calBurnt, error) in
+                    DispatchQueue.main.async {
+                        if let time = totalTimes, let cal = calBurnt {
+                            self.timeSpent.text = "\(time)"
+                            self.calBurnt.text = "\(cal)🔥"
+                        } else {
+                            print("Error: \(error?.localizedDescription ?? "Unknown error")")
+                        }
+                    }
+                }
+
+            default:
+                break
+            }
+        } else {
+            print("No current user is logged in")
+        }
+
+        
+    }
+    
+    
+    
+    //log out
     @IBAction func onLogOutTapped(_ sender: Any) {
         showConfirmLogoutAlert()
     }
@@ -361,7 +678,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         present(alertController, animated: true)
     }
     
-    
+    //exit
     @IBAction func unwindToPlaygroundVC(segue: UIStoryboardSegue) {
         
     }

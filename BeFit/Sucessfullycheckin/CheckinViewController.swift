@@ -12,8 +12,14 @@ protocol ViewControllerBDelegate {
     func viewControllerBDidDismiss()
 }
 
+protocol CheckinViewControllerDelegate: AnyObject {
+    func checkinViewControllerDidSaveCheckin()
+}
+
+
 class CheckinViewController: UIViewController {
     var delegate: ViewControllerBDelegate?
+    weak var dbdelegate: CheckinViewControllerDelegate?
     
     @IBOutlet weak var imageView: UIImageView!
     
@@ -44,8 +50,25 @@ class CheckinViewController: UIViewController {
            imageView.layer.addSublayer(gradientLayer)
     }
     
+    func saveWorkoutCount(workout: WorkoutCount) {
+        workout.save { result in
+            switch result {
+            case .success(let savedWorkout):
+                print("Successfully saved workout: \(savedWorkout)")
+                self.dbdelegate?.checkinViewControllerDidSaveCheckin()
+            case .failure(let error):
+                print("Error saving workout: \(error)")
+            }
+        }
+    }
+
 
     @IBAction func onDoneTapped(_ sender: Any) {
+        let checkinDate = Calendar.current.startOfDay(for: Date())
+        let workout = WorkoutCount(userid: User.current?.userid, workout_date: checkinDate, checkin_count: 1)
+        saveWorkoutCount(workout: workout)
+
+        
         performSegue(withIdentifier: "unwindToPlaygroundVC", sender: self)
     }
     
