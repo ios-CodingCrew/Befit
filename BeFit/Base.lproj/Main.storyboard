@@ -1081,12 +1081,15 @@
                     </navigationItem>
                     <connections>
                         <outlet property="bgView" destination="XrQ-3w-Rcz" id="Wee-Xg-Xsl"/>
+                        <outlet property="calBurnt" destination="mSJ-K9-FZN" id="tVg-Yb-lSc"/>
+                        <outlet property="checkinTimes" destination="jH7-22-Kfl" id="Y6K-eg-Axw"/>
                         <outlet property="collectionView" destination="eNV-56-D4D" id="EWn-fY-HK3"/>
                         <outlet property="firstImageview" destination="wRL-A3-gS6" id="CUv-BZ-c5P"/>
                         <outlet property="monthLabel" destination="ijl-oo-oJM" id="AE9-HW-sS4"/>
                         <outlet property="secImageview" destination="gzM-Vy-Ubf" id="Ah5-F4-wua"/>
                         <outlet property="segmentedControl" destination="rJz-yX-Vlk" id="FEJ-Te-s5Y"/>
                         <outlet property="thirdImageview" destination="dbZ-Ve-oWn" id="ehW-6V-70P"/>
+                        <outlet property="timeSpent" destination="dzD-Ww-2i8" id="HBa-rC-hTo"/>
                         <segue destination="7GO-oW-KYa" kind="show" identifier="toCheckin" id="DsS-eZ-OIO"/>
                         <segue destination="3Cc-7P-gXA" kind="show" identifier="toTrack" id="nZi-Pq-GcT"/>
                     </connections>
@@ -1231,7 +1234,9 @@
                     </view>
                     <navigationItem key="navigationItem" title="Track My Activity" id="En0-VU-kir"/>
                     <connections>
+                        <outlet property="calInput" destination="bZW-6P-t2z" id="34U-hx-pk9"/>
                         <outlet property="popupButton" destination="B0K-xD-uAY" id="99t-bi-eag"/>
+                        <outlet property="timeInput" destination="oD6-5A-5Mc" id="TKB-Ia-zTG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Nxz-DI-VWv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

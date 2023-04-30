@@ -32,4 +32,5 @@ struct WorkoutData: ParseObject {
     var workout_date: Date?
     var workout_type: String?
     var duration: Int?
+    var calories_burnt: Int?
 }

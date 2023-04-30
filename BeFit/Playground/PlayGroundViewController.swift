@@ -9,7 +9,7 @@ import UIKit
 import QuartzCore
 import ParseSwift
 
-class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, TrackActivityDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var monthLabel: UILabel!
@@ -22,6 +22,11 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     @IBOutlet weak var bgView: UIImageView!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
+    
+    
+    @IBOutlet weak var checkinTimes: UILabel!
+    @IBOutlet weak var timeSpent: UILabel!
+    @IBOutlet weak var calBurnt: UILabel!
     
     var selectedDate = Date()
     var totalSquares = [String]()
@@ -52,17 +57,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         secImageview.layer.cornerRadius = 10
         thirdImageview.layer.cornerRadius = 10
         
-        //set up navigation bar: add text
-        let labelText = "Welcome Back!"
-        let label = UILabel()
-        label.text = labelText
-        label.font = UIFont(name: "Avenir Next-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        label.textColor = .white // Adjust the text color as needed
-        
-        let leftBarItem = UIBarButtonItem(customView: label)
-        navigationItem.leftBarButtonItem = leftBarItem
-        
-        //set up 'log out' button
+  
 
 
         //set up segmented control
@@ -87,6 +82,65 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         
         setCellsView()
         setMonthView()
+        
+        var name = ""
+        var totalTime = 0
+        if let currentUser = User.current {
+            let user = currentUser
+            name = user.username ?? ""
+            getDailyWorkoutTime(for: user) { dailyTime, error in
+                if let dailyTime = dailyTime {
+                    DispatchQueue.main.async {
+                        self.timeSpent.text = "\(dailyTime) min"
+                    }
+                   // totalTime = dailyTime
+                    print("Daily workout time: \(dailyTime) minutes")
+                } else {
+                    print("Error fetching daily workout time: \(error?.localizedDescription ?? "Unknown error")")
+                }
+            }
+
+//            getMonthlyWorkoutTime(for: user) { monthlyTime, error in
+//                if let monthlyTime = monthlyTime {
+//                    print("Monthly workout time: \(monthlyTime) minutes")
+//                } else {
+//                    print("Error fetching monthly workout time: \(error?.localizedDescription ?? "Unknown error")")
+//                }
+//            }
+//
+//            getYearlyWorkoutTime(for: user) { yearlyTime, error in
+//                if let yearlyTime = yearlyTime {
+//                    print("Yearly workout time: \(yearlyTime) minutes")
+//                } else {
+//                    print("Error fetching yearly workout time: \(error?.localizedDescription ?? "Unknown error")")
+//                }
+//            }
+        } else {
+            print("No current user is logged in")
+        }
+
+        
+        //set up navigation bar: add text
+        var labelText = ""
+        if(name == ""){
+            labelText = "Welcome Back!"
+        }else{
+            labelText = name + ", Welcome Back!"
+        }
+        //let labelText = "Welcome Back!"
+        let label = UILabel()
+        label.text = labelText
+        label.font = UIFont(name: "Avenir Next-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        label.textColor = .white // Adjust the text color as needed
+        
+        let leftBarItem = UIBarButtonItem(customView: label)
+        navigationItem.leftBarButtonItem = leftBarItem
+        
+        //set up display
+       // timeSpent.text = "\(totalTime) min"
+
+        
+        
     }
     
     func setCellsView(){
@@ -124,7 +178,101 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         collectionView.reloadData()
     }
     
+
+    func getDailyWorkoutTime(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+        let now = Date()
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: now)
+        
+        let query = WorkoutData.query()
+            .where("userid" == user.userid)
+            .where("workout_date" > startOfDay)
+            .where("workout_date" <= now)
+        
+        query.find { results in
+            switch results {
+            case .success(let workoutDataArray):
+                let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
+                completion(totalTime, nil)
+                print("daily time duration: \(totalTime)")
+            case .failure(let error):
+                completion(nil, error)
+            }
+        }
+    }
+
+    func getMonthlyWorkoutTime(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+        let now = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month], from: now)
+        let startOfMonth = calendar.date(from: components)
+        
+        let query = WorkoutData.query()
+            .where("userid" == user.userid)
+            .where("workout_date" >= startOfMonth)
+            .where("workout_date" <= now)
+        
+        query.find { results in
+            switch results {
+            case .success(let workoutDataArray):
+                let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
+                completion(totalTime, nil)
+                print("monthly time duration: \(totalTime)")
+            case .failure(let error):
+                completion(nil, error)
+            }
+        }
+    }
+
+    func getYearlyWorkoutTime(for user: User, completion: @escaping (Int?, Error?) -> Void) {
+        let now = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year], from: now)
+        let startOfYear = calendar.date(from: components)
+        
+        let query = WorkoutData.query()
+            .where("userid" == user.userid)
+            .where("workout_date" >= startOfYear)
+            .where("workout_date" <= now)
+        
+        query.find { results in
+            switch results {
+            case .success(let workoutDataArray):
+                let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
+                completion(totalTime, nil)
+                print("yearly time duration: \(totalTime)")
+            case .failure(let error):
+                completion(nil, error)
+            }
+        }
+    }
     
+    func didSaveWorkoutData() {
+           // Update timeSpent.text here
+        let user1 = User.current
+        var totalTime = 0
+        if let currentUser = User.current {
+            let user = currentUser
+            getDailyWorkoutTime(for: user) { dailyTime, error in
+                if let dailyTime = dailyTime {
+                    DispatchQueue.main.async {
+                        self.timeSpent.text = "\(dailyTime) min"
+                    }
+                   // totalTime = dailyTime
+                    print("Daily workout time: \(dailyTime) minutes")
+                } else {
+                    print("Error fetching daily workout time: \(error?.localizedDescription ?? "Unknown error")")
+                }
+            }
+
+        } else {
+            print("No current user is logged in")
+        }
+    }
+
+    
+    
+    /////////////////Collection View Set Up///////////////
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         totalSquares.count
     }
@@ -165,6 +313,13 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
 //        return CGSize(width: width-4, height: height-4)
 //    }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+          if segue.identifier == "toTrack" {
+              if let trackActivityVC = segue.destination as? TrackActivityViewController {
+                  trackActivityVC.delegate = self
+              }
+          }
+      }
     
     @IBAction func toCheckin(_ sender: Any) {
         performSegue(withIdentifier: "toCheckin", sender: nil)
