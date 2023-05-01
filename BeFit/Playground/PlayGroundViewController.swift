@@ -31,6 +31,10 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     var selectedDate = Date()
     var totalSquares = [String]()
     var selectedSegmentIndex: Int = 0
+    var selectedIndexPath: IndexPath?
+    var currentYear: Int?
+    var currentMonth: Int?
+
 
     
     //private let containerView = RoundedCornerView()
@@ -59,8 +63,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         secImageview.layer.cornerRadius = 10
         thirdImageview.layer.cornerRadius = 10
         
-  
-
+        
 
         //set up segmented control
         let font = UIFont(name: "Verdana", size: 16) ?? UIFont.systemFont(ofSize: 16) // Use Impact font or fall back to system font if not available
@@ -79,11 +82,16 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
                .foregroundColor: selectedTextColor
            ]
 
-           segmentedControl.setTitleTextAttributes(selectedAttributes, for: .selected)
+        segmentedControl.setTitleTextAttributes(selectedAttributes, for: .selected)
         
         
         setCellsView()
         setMonthView()
+        
+        //placeafter setting up the collectionView, or the totalSquares is empty
+        //convert current date to indexPath
+        selectedIndexPath = indexPathForCurrentDate()
+        print("SI: \(String(describing: selectedIndexPath))")
         
         var name = ""
         
@@ -114,6 +122,26 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         
         
     }
+    
+    func indexPathForCurrentDate() -> IndexPath? {
+        let currentDate = Date()
+        let calendar = Calendar.current
+        
+        // Extract the day, month, and year components from the current date
+        let dateComponents = calendar.dateComponents([.day, .month, .year], from: currentDate)
+        let currentDay = String(dateComponents.day!)
+        print("currentDay: \(currentDay)")
+        print("sq: \(totalSquares)")
+        // Iterate through totalSquares and compare the day numbers
+        for (index, element) in totalSquares.enumerated() {
+            print("index: \(index), element: \(element)")
+            if element == currentDay {
+                return IndexPath(item: index, section: 0)
+            }
+        }
+        
+        return nil
+    }
 
     
     //set up calendar view
@@ -129,6 +157,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         flowLayout.itemSize = CGSize(width: width, height: height)
         //flowLayout.invalidateLayout()
     }
+    
     
     func setMonthView(){
         totalSquares.removeAll()
@@ -147,6 +176,8 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
             }
             count += 1
         }
+        currentYear = CalendarHelper().yearInt(date: selectedDate)
+        currentMonth = CalendarHelper().monthInt(date: selectedDate)
         monthLabel.text =  CalendarHelper().monthString(date: selectedDate) + " " + CalendarHelper().yearString(date: selectedDate)
         
         collectionView.reloadData()
@@ -158,15 +189,32 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         return String(format: "%.1f hr", hours)
     }
  
+
+    
     func getDailyWorkoutTime(for user: User, completion: @escaping (String?, Int?, Error?) -> Void) {
-        let now = Date()
+        print("in get daily workout")
+        let now = selectedDate
         let calendar = Calendar.current
-        let startOfDay = calendar.startOfDay(for: now)
+        
+        // Convert dates to UTC timezone
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(abbreviation: "PST")
+
+        let nowInUTC = dateFormatter.string(from: now)
+        let nowUTC = dateFormatter.date(from: nowInUTC)
+
+        let startOfDayUTC = calendar.startOfDay(for: nowUTC!)
+        let endOfDayUTC = calendar.date(byAdding: DateComponents(day: 1, second: -1), to: startOfDayUTC)
+        
+        print("Start of day: \(startOfDayUTC)")
+        print("End of day: \(endOfDayUTC!)")
+        print("Now: \(nowUTC!)")
         
         let query = WorkoutData.query()
             .where("userid" == user.userid)
-            .where("workout_date" > startOfDay)
-            .where("workout_date" <= now)
+            .where("workout_date" >= startOfDayUTC)
+            .where("workout_date" <= endOfDayUTC!)
         
         query.find { results in
             switch results {
@@ -182,26 +230,53 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         }
     }
 
-
     func getMonthlyWorkoutTime(for user: User, completion: @escaping (String?, Int?, Error?) -> Void) {
-        let now = Date()
+        print("in get monthly workout")
+        let now = selectedDate
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: now)
-        let startOfMonth = calendar.date(from: components)
+
+        guard let startOfMonth = calendar.date(from: components) else {
+            completion(nil, nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to calculate start of month"]))
+            return
+        }
+        
+        let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth)
+        
+        // Convert dates to UTC timezone
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(abbreviation: "PST")
+        
+        let startOfMonthInUTC = dateFormatter.string(from: startOfMonth)
+        let endOfMonthInUTC = dateFormatter.string(from: endOfMonth!)
+        
+        let startOfMonthUTC = dateFormatter.date(from: startOfMonthInUTC)
+        let endOfMonthUTC = dateFormatter.date(from: endOfMonthInUTC)
+        
+        
+        print("Start of month: \(startOfMonthUTC!)")
+        print("End of month: \(endOfMonthUTC!)")
+        
+        print("User id: \(user.userid ?? "nil")")
+//        let test1 = "888"
+//        let test2 = 999
+//        completion(test1, test2, nil)
         
         let query = WorkoutData.query()
             .where("userid" == user.userid)
-            .where("workout_date" >= startOfMonth)
-            .where("workout_date" <= now)
-        
-        query.find { results in
-            switch results {
+            .where("workout_date" >= startOfMonthUTC!)
+            .where("workout_date" <= endOfMonthUTC!)
+
+        query.find { result in
+            switch result {
             case .success(let workoutDataArray):
+                print("Workout data array: \(workoutDataArray)")
                 let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
                 let res = self.formatDurationInHours(totalTime)
                 let totalCalories = workoutDataArray.compactMap { $0.calories_burnt }.reduce(0, +)
                 completion(res, totalCalories, nil)
-                print("monthly time duration: \(totalTime), daily calories burnt: \(totalCalories)")
+                print("monthly time duration: \(totalTime), monthly calories burnt: \(totalCalories)")
             case .failure(let error):
                 completion(nil, nil, error)
             }
@@ -209,61 +284,82 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     }
 
     func getYearlyWorkoutTime(for user: User, completion: @escaping (String?, Int?, Error?) -> Void) {
-        let now = Date()
+        print("in get yearly workout")
+        let now = selectedDate
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year], from: now)
-        let startOfYear = calendar.date(from: components)
+
+        guard let startOfYear = calendar.date(from: components) else {
+            completion(nil, nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to calculate start of year"]))
+            return
+        }
+        
+        let endOfYear = calendar.date(byAdding: DateComponents(year: 1, day: -1), to: startOfYear)
+        
+        // Convert dates to UTC timezone
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(abbreviation: "PST")
+        
+        let startOfYearInUTC = dateFormatter.string(from: startOfYear)
+        let endOfYearInUTC = dateFormatter.string(from: endOfYear!)
+        
+        let startOfYearUTC = dateFormatter.date(from: startOfYearInUTC)
+        let endOfYearUTC = dateFormatter.date(from: endOfYearInUTC)
+        
+        print("Start of year: \(startOfYearUTC!)")
+        print("End of year: \(endOfYearUTC!)")
         
         let query = WorkoutData.query()
             .where("userid" == user.userid)
-            .where("workout_date" >= startOfYear)
-            .where("workout_date" <= now)
+            .where("workout_date" >= startOfYearUTC!)
+            .where("workout_date" <= endOfYearUTC!)
         
-        query.find { results in
-            switch results {
+        query.find { result in
+            switch result {
             case .success(let workoutDataArray):
                 let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
                 let res = self.formatDurationInHours(totalTime)
                 let totalCalories = workoutDataArray.compactMap { $0.calories_burnt }.reduce(0, +)
                 completion(res, totalCalories, nil)
-                print("yearly time duration: \(totalTime), daily calories burnt: \(totalCalories)")
+                print("monthly time duration: \(totalTime), monthly calories burnt: \(totalCalories)")
             case .failure(let error):
                 completion(nil, nil, error)
             }
         }
     }
+
     
     
     //helper funtion for query checkin times:
     func fetchDailyCheckinTimes(for user: User, completion: @escaping (Int?, Error?) -> Void) {
-        let now = Date()
+        let now = selectedDate
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: now)
-        //let startOfNextDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
-        
+        let endOfDay = calendar.date(byAdding: DateComponents(day: 1, second: -1), to: startOfDay)
+
         // Convert dates to UTC timezone
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-        
+        dateFormatter.timeZone = TimeZone(abbreviation: "PST")
+
         let startOfDayInUTC = dateFormatter.string(from: startOfDay)
-        let startOfNextDayInUTC = dateFormatter.string(from: now)
-        
+        let endOfDayInUTC = dateFormatter.string(from: endOfDay!)
+
         let startOfDayUTC = dateFormatter.date(from: startOfDayInUTC)
-        let startOfNextDayUTC = dateFormatter.date(from: startOfNextDayInUTC)
-        
-        print("Start of day: \(startOfDayUTC!)") // Update this line
-        print("Start of next day: \(startOfNextDayUTC!)") // Update this line
-        
+        let endOfDayUTC = dateFormatter.date(from: endOfDayInUTC)
+
+        print("Start of day: \(startOfDayUTC!)")
+        print("End of day: \(endOfDayUTC!)")
+
         let query = WorkoutCount.query()
             .where("userid" == user.userid)
             .where("workout_date" >= startOfDayUTC!)
-            .where("workout_date" < startOfNextDayUTC!)
-        
+            .where("workout_date" <= endOfDayUTC!)
+
         query.find { result in
             switch result {
             case .success(let workoutCounts):
-                print("Fetched workoutCounts: \(workoutCounts)") // Add this line
                 let totalCheckins = workoutCounts.reduce(0) { $0 + ($1.checkin_count ?? 0) }
                 completion(totalCheckins, nil)
                 print("daily checkedin times: \(totalCheckins)")
@@ -274,40 +370,41 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         }
     }
 
-
-    
+    // New fetchMonthlyCheckinTimes
     func fetchMonthlyCheckinTimes(for user: User, completion: @escaping (Int?, Error?) -> Void) {
-        let now = Date()
+        let now = selectedDate
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: now)
+
         guard let startOfMonth = calendar.date(from: components) else {
             completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to calculate start of month"]))
             return
         }
         
+        let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth)
+
         // Convert dates to UTC timezone
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-        
+        dateFormatter.timeZone = TimeZone(abbreviation: "PST")
+
         let startOfMonthInUTC = dateFormatter.string(from: startOfMonth)
-        let nowInUTC = dateFormatter.string(from: now)
-        
+        let endOfMonthInUTC = dateFormatter.string(from: endOfMonth!)
+
         let startOfMonthUTC = dateFormatter.date(from: startOfMonthInUTC)
-        let nowUTC = dateFormatter.date(from: nowInUTC)
-        
-        print("Start of month: \(startOfMonthUTC!)") // Update this line
-        print("Now: \(nowUTC!)") // Update this line
-        
+        let endOfMonthUTC = dateFormatter.date(from: endOfMonthInUTC)
+
+        print("Start of month: \(startOfMonthUTC!)")
+        print("End of month: \(endOfMonthUTC!)")
+
         let query = WorkoutCount.query()
             .where("userid" == user.userid)
             .where("workout_date" >= startOfMonthUTC!)
-            .where("workout_date" <= nowUTC!)
-        
+            .where("workout_date" <= endOfMonthUTC!)
+
         query.find { result in
             switch result {
             case .success(let workoutCounts):
-                print("Fetched workoutCounts: \(workoutCounts)") // Add this line
                 let totalCheckins = workoutCounts.reduce(0) { $0 + ($1.checkin_count ?? 0) }
                 completion(totalCheckins, nil)
                 print("monthly checkedin times: \(totalCheckins)")
@@ -317,41 +414,43 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
             }
         }
     }
-
-
-
+    
+    
+    // New fetchYearlyCheckinTimes
     func fetchYearlyCheckinTimes(for user: User, completion: @escaping (Int?, Error?) -> Void) {
-        let now = Date()
+        let now = selectedDate
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year], from: now)
+
         guard let startOfYear = calendar.date(from: components) else {
             completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to calculate start of year"]))
             return
         }
-        
+
+        let endOfYear = calendar.date(byAdding: DateComponents(year: 1, day: -1), to: startOfYear)
+
         // Convert dates to UTC timezone
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-        
+        dateFormatter.timeZone = TimeZone(abbreviation: "PST")
+
         let startOfYearInUTC = dateFormatter.string(from: startOfYear)
-        let nowInUTC = dateFormatter.string(from: now)
-        
+        let endOfYearInUTC = dateFormatter.string(from: endOfYear!)
+
         let startOfYearUTC = dateFormatter.date(from: startOfYearInUTC)
-        let nowUTC = dateFormatter.date(from: nowInUTC)
-        
-        print("Start of year: \(startOfYearUTC!)") // Update this line
-        print("Now: \(nowUTC!)") // Update this line
-        
+        let endOfYearUTC = dateFormatter.date(from: endOfYearInUTC)
+
+        print("Start of year: \(startOfYearUTC!)")
+        print("End of year: \(endOfYearUTC!)")
+
         let query = WorkoutCount.query()
             .where("userid" == user.userid)
             .where("workout_date" >= startOfYearUTC!)
-            .where("workout_date" <= nowUTC!)
-        
+            .where("workout_date" <= endOfYearUTC!)
+
         query.find { result in
             switch result {
             case .success(let workoutCounts):
-                print("Fetched workoutCounts: \(workoutCounts)") // Add this line
                 let totalCheckins = workoutCounts.reduce(0) { $0 + ($1.checkin_count ?? 0) }
                 completion(totalCheckins, nil)
                 print("yearly checkedin times: \(totalCheckins)")
@@ -363,18 +462,16 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     }
 
     
+    
+    
+
+    
     //update workoutdata
     func didSaveWorkoutData() {
-        //update workoudata here
-//        DispatchQueue.main.async {
-//               // Update your UILabel with the new check-in times
-//               self.timeSpent.text = "44"
-//        }
         updateWorkoutData()
     }
     
     func updateWorkoutData(){
-        let currentDate = Date()
         if let currentUser = User.current {
             let user = currentUser
             
@@ -433,7 +530,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         // Fetch the updated checkin_count from the database
         // and update the text field with the new value
         
-        let currentDate = Date()
+       // let currentDate = Date()
         if let currentUser = User.current {
             let user = currentUser
             
@@ -492,16 +589,38 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        print("in cellForItem")
+        print("\(totalSquares[indexPath.item])")
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "calCell", for: indexPath) as! CalendarCell
         cell.dayOfMonth.text = totalSquares[indexPath.item]
+        cell.dayOfMonth.textColor = .white
+        
+        
+        
+//        print("SIIII: \(selectedIndexPath)")
+//
+//        //set up text font
+        let font = UIFont(name: "Verdana", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        let Bfont = UIFont(name: "Verdana-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        if selectedIndexPath == indexPath {
+            cell.dayOfMonth.font = Bfont
+        } else {
+            cell.dayOfMonth.font = font
+        }
         
         //TODO: set backgound color corresonding to workout time
         if(totalSquares[indexPath.item] == ""){
             cell.backgroundColor =  UIColor(red: 235.0/255.0, green: 237.0/255.0, blue: 240.0/255.0, alpha: 0.0)
         }else{
-            //TODO: decide color here
+            if(indexPath == selectedIndexPath){
+                cell.backgroundColor = UIColor.red
+            }else{
+                //TODO: decide color here
+                cell.backgroundColor = UIColor.systemMint
+            }
             
-            cell.backgroundColor = UIColor.systemMint
+           
         }
         
         
@@ -516,17 +635,42 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         return CGSize(width: width, height: height)
     }
     
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-//    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("in didselectItem")
+        
+        if totalSquares[indexPath.item] == "" {
+            return
+        }
+        
+        let font = UIFont(name: "Verdana", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        // Deselect previously selected cell, if any
+        if let previousSelectedIndexPath = selectedIndexPath {
+            let previousSelectedCell = collectionView.cellForItem(at: previousSelectedIndexPath) as? CalendarCell
+            previousSelectedCell?.backgroundColor = UIColor.systemMint // Set to default background color
+            previousSelectedCell?.dayOfMonth.font = font
+        }
+        
+        let dateComponents = DateComponents(year: currentYear, month: currentMonth, day: Int(totalSquares[indexPath.item]))
+        if let date = Calendar.current.date(from: dateComponents) {
+            selectedDate = date
+            updateWorkoutData()
+            updateCheckinTimes()
+            let now = Date()
+            print("in didselce and selected data is \(selectedDate)")
+            print("current time: \(now)")
+        }
 
+        // Set the background color for the newly selected cell
+        let selectedCell = collectionView.cellForItem(at: indexPath) as? CalendarCell
+        selectedCell?.backgroundColor = UIColor.red // Set to selected background color
+        let Bfont = UIFont(name: "Verdana-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        selectedCell?.dayOfMonth.font = Bfont
+        // Save the index path of the selected cell
+        selectedIndexPath = indexPath
+        
+        //collectionView.reloadData()
+    }
 
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        let width = (collectionView.frame.size.width-2)/8
-//        let height = (collectionView.frame.size.height-2)/8
-//        return CGSize(width: width-4, height: height-4)
-//    }
 
     
     //perform segue navigation
@@ -559,11 +703,15 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     @IBAction func previousMonth(_ sender: Any) {
         selectedDate = CalendarHelper().minusMonth(date: selectedDate)
         setMonthView()
+        updateWorkoutData()
+        updateCheckinTimes()
     }
     
     @IBAction func nextMonth(_ sender: Any) {
         selectedDate = CalendarHelper().plusMonth(date: selectedDate)
         setMonthView()
+        updateWorkoutData()
+        updateCheckinTimes()
     }
     
     override open var shouldAutorotate: Bool{
@@ -574,7 +722,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     @IBAction func timeSegmentChanged(_ sender: UISegmentedControl) {
         selectedSegmentIndex = sender.selectedSegmentIndex
         //TODO: change to selected date
-        let currentDate = Date()
+        //let currentDate = Date()
 
         if let currentUser = User.current {
             let user = currentUser

@@ -29,10 +29,14 @@ struct User: ParseUser {
 
     // TODO: Pt 2 - Add custom property for `lastPostedDate`
     //var lastPostedDate: Date?
-    var userid: Int?
-    
+    var userid: String?
+
     //incase we need to implement the stretch goal
     var height: Float?
     var weight: Float?
 
 }
+
+
+
+

@@ -27,7 +27,7 @@ struct WorkoutData: ParseObject {
     var ACL: ParseACL?
     var originalData: Data?
     
-    var userid: Int?
+    var userid: String?
     var workout_id: Int?
     var workout_date: Date?
     var workout_type: String?

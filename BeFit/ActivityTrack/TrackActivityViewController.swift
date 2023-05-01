@@ -97,7 +97,8 @@ class TrackActivityViewController: UIViewController{
     
     
     func saveWorkoutData(user: User, workoutType: String, duration: Int, caloriesBurnt: Int, completion: @escaping (Bool, Error?) -> Void) {
-        let workoutData = WorkoutData(userid: user.userid, workout_id: nil, workout_date: Date(), workout_type: workoutType, duration: duration, calories_burnt: caloriesBurnt)
+        let user = User.current
+        let workoutData = WorkoutData(userid: user?.userid, workout_id: nil, workout_date: Date(), workout_type: workoutType, duration: duration, calories_burnt: caloriesBurnt)
 
         workoutData.save { result in
             switch result {
@@ -105,6 +106,7 @@ class TrackActivityViewController: UIViewController{
                 print("Workout data saved successfully: \(savedWorkoutData)")
                 self.delegate?.didSaveWorkoutData()
                 completion(true, nil)
+
             case .failure(let error):
                 print("Error saving workout data: \(error.localizedDescription)")
                 completion(false, error)

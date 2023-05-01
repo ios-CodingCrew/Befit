@@ -17,7 +17,7 @@ struct WorkoutCount: ParseObject {
     var updatedAt: Date?
     var ACL: ParseACL?
 
-    var userid: Int?
+    var userid: String?
     var workout_date: Date?
     var checkin_count: Int?
 }

@@ -30,6 +30,11 @@ class SignupViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    func generateUniqueUserID() -> String {
+        return UUID().uuidString
+    }
+
+    
     @IBAction func onSignUpTapped(_ sender: Any) {
         guard let username = usernameField.text,
               let email = emailField.text,
@@ -47,6 +52,10 @@ class SignupViewController: UIViewController {
         newUser.username = username
         newUser.email = email
         newUser.password = password
+        
+        // Generate a custom userid
+        let userid = generateUniqueUserID()
+        newUser.userid = userid
 
         newUser.signup { [weak self] result in
 

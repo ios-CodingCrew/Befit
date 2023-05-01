@@ -781,6 +781,45 @@
                                     </label>
                                 </subviews>
                             </stackView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="eNV-56-D4D">
+                                <rect key="frame" x="8" y="158" width="377" height="302"/>
+                                <color key="backgroundColor" white="1" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="3" minimumInteritemSpacing="0.0" id="esP-L3-1As">
+                                    <size key="itemSize" width="0.0" height="0.0"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="calCell" id="3OA-0E-bFu" customClass="CalendarCell" customModule="BeFit" customModuleProvider="target">
+                                        <rect key="frame" x="189" y="0.0" width="0.0" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="pJO-ZN-TVU">
+                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="20"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HqC-ti-csc">
+                                                    <rect key="frame" x="-4" y="-0.33333333333333393" width="8" height="20.666666666666671"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="HqC-ti-csc" firstAttribute="centerX" secondItem="pJO-ZN-TVU" secondAttribute="centerX" id="jNP-be-WVB"/>
+                                                <constraint firstItem="HqC-ti-csc" firstAttribute="centerY" secondItem="pJO-ZN-TVU" secondAttribute="centerY" id="qg0-Sk-874"/>
+                                            </constraints>
+                                        </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="dayOfMonth" destination="HqC-ti-csc" id="h0X-L6-ErY"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="fLD-6X-15a" id="Jpb-fg-Qbs"/>
+                                    <outlet property="delegate" destination="fLD-6X-15a" id="7xC-Pj-2yE"/>
+                                </connections>
+                            </collectionView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="rJz-yX-Vlk">
                                 <rect key="frame" x="8" y="468" width="377" height="32"/>
                                 <color key="backgroundColor" systemColor="systemMintColor"/>
@@ -964,9 +1003,9 @@
                                             <attributedString key="attributedTitle">
                                                 <fragment content="Track Activity">
                                                     <attributes>
-                                                        <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <font key="NSFont" size="18" name="AvenirNext-Bold"/>
-                                                        <font key="NSOriginalFont" size="12" name="Webdings"/>
+                                                        <font key="NSOriginalFont" size="18" name="AvenirNext-Bold"/>
                                                     </attributes>
                                                 </fragment>
                                             </attributedString>
@@ -977,45 +1016,6 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="eNV-56-D4D">
-                                <rect key="frame" x="8" y="158" width="377" height="302"/>
-                                <color key="backgroundColor" white="1" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="3" minimumInteritemSpacing="0.0" id="esP-L3-1As">
-                                    <size key="itemSize" width="0.0" height="0.0"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="calCell" id="3OA-0E-bFu" customClass="CalendarCell" customModule="BeFit" customModuleProvider="target">
-                                        <rect key="frame" x="189" y="0.0" width="0.0" height="20"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="pJO-ZN-TVU">
-                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="20"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HqC-ti-csc">
-                                                    <rect key="frame" x="-4" y="-0.33333333333333393" width="8" height="20.666666666666671"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="HqC-ti-csc" firstAttribute="centerX" secondItem="pJO-ZN-TVU" secondAttribute="centerX" id="jNP-be-WVB"/>
-                                                <constraint firstItem="HqC-ti-csc" firstAttribute="centerY" secondItem="pJO-ZN-TVU" secondAttribute="centerY" id="qg0-Sk-874"/>
-                                            </constraints>
-                                        </collectionViewCellContentView>
-                                        <connections>
-                                            <outlet property="dayOfMonth" destination="HqC-ti-csc" id="h0X-L6-ErY"/>
-                                        </connections>
-                                    </collectionViewCell>
-                                </cells>
-                                <connections>
-                                    <outlet property="dataSource" destination="fLD-6X-15a" id="Jpb-fg-Qbs"/>
-                                    <outlet property="delegate" destination="fLD-6X-15a" id="7xC-Pj-2yE"/>
-                                </connections>
-                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Tua-c0-5c9"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

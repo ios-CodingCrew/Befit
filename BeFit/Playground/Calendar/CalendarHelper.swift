@@ -31,6 +31,17 @@ class CalendarHelper{
         return dateFormatter.string(from: date)
     }
     
+    func yearInt(date: Date) -> Int {
+        let components = calendar.dateComponents([.year], from: date)
+        return components.year!
+    }
+
+    func monthInt(date: Date) -> Int {
+        let components = calendar.dateComponents([.month], from: date)
+        return components.month!
+    }
+
+    
     func daysInMonth(date: Date) -> Int{
         let range = calendar.range(of: .day, in: .month, for: date)!
         return range.count
