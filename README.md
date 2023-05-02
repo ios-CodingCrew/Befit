@@ -102,10 +102,18 @@ https://www.figma.com/file/BuTdlUAZ9LUVjFc4pOFJiF/BeFit-Wireframe?node-id=0-1
 ### [BONUS] Digital Wireframes & Mockups
 ![](https://i.imgur.com/NPcvvQY.png)
 
-## Demo
+## Video Walkthrough
 
-![Alt Text](./capstonedemo.gif)
+Here's a walkthrough of implemented user stories:
 
+![Alt Text](./capstondemo.gif)
+
+<!-- Replace this with whatever GIF tool you used! -->
+GIF created with Kap 
+<!-- Recommended tools:
+[Kap](https://getkap.co/) for macOS
+[ScreenToGif](https://www.screentogif.com/) for Windows
+[peek](https://github.com/phw/peek) for Linux. -->
 
 ### [BONUS] Interactive Prototype
 
