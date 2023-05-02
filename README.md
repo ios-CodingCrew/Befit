@@ -102,6 +102,9 @@ https://www.figma.com/file/BuTdlUAZ9LUVjFc4pOFJiF/BeFit-Wireframe?node-id=0-1
 ### [BONUS] Digital Wireframes & Mockups
 ![](https://i.imgur.com/NPcvvQY.png)
 
+## Demo
+
+![Alt Text](./capstonedemo.gif)
 
 
 ### [BONUS] Interactive Prototype

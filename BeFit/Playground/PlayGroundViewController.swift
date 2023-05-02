@@ -473,6 +473,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     //update workoutdata
     func didSaveWorkoutData() {
         updateWorkoutData()
+       
     }
     
     func updateWorkoutData(){
