@@ -32,6 +32,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     var totalSquares = [String]()
     var selectedSegmentIndex: Int = 0
     var selectedIndexPath: IndexPath?
+    var selectedDay: Int?
     var currentYear: Int?
     var currentMonth: Int?
 
@@ -91,6 +92,8 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         //placeafter setting up the collectionView, or the totalSquares is empty
         //convert current date to indexPath
         selectedIndexPath = indexPathForCurrentDate()
+        selectedDay = Int(totalSquares[selectedIndexPath!.item ]) ?? 0
+
         print("SI: \(String(describing: selectedIndexPath))")
         
         var name = ""
@@ -106,9 +109,9 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         //set up navigation bar: add text
         var labelText = ""
         if(name == ""){
-            labelText = "Welcome Back!"
+            labelText = "Welcome Back💪!"
         }else{
-            labelText = name + ", Welcome Back!"
+            labelText = name + ", Welcome Back💪!"
         }
         //let labelText = "Welcome Back!"
         let label = UILabel()
@@ -178,6 +181,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         }
         currentYear = CalendarHelper().yearInt(date: selectedDate)
         currentMonth = CalendarHelper().monthInt(date: selectedDate)
+        print("Current Year: \(String(describing: currentYear)), current month: \(String(describing: currentMonth))")
         monthLabel.text =  CalendarHelper().monthString(date: selectedDate) + " " + CalendarHelper().yearString(date: selectedDate)
         
         collectionView.reloadData()
@@ -584,6 +588,83 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     
     
     /////////////////Collection View Set Up///////////////
+    ///helper for cell
+    func getCellDailyWorkoutTime(for user: User, date: Date, completion: @escaping (Int?, Error?) -> Void) {
+        let now = date
+        let calendar = Calendar.current
+        
+        // Convert dates to UTC timezone
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        dateFormatter.timeZone = TimeZone(abbreviation: "PST")
+
+        let nowInUTC = dateFormatter.string(from: now)
+        let nowUTC = dateFormatter.date(from: nowInUTC)
+
+        let startOfDayUTC = calendar.startOfDay(for: nowUTC!)
+        let endOfDayUTC = calendar.date(byAdding: DateComponents(day: 1, second: -1), to: startOfDayUTC)
+        
+        print("Start of day: \(startOfDayUTC)")
+        print("End of day: \(endOfDayUTC!)")
+        print("Now: \(nowUTC!)")
+        
+        let query = WorkoutData.query()
+            .where("userid" == user.userid)
+            .where("workout_date" >= startOfDayUTC)
+            .where("workout_date" <= endOfDayUTC!)
+        
+        query.find { results in
+            switch results {
+            case .success(let workoutDataArray):
+                let totalTime = workoutDataArray.compactMap { $0.duration }.reduce(0, +)
+                //let res = self.formatDurationInHours(totalTime)
+                //let totalCalories = workoutDataArray.compactMap { $0.calories_burnt }.reduce(0, +)
+                completion(totalTime, nil)
+                print("cell daily time duration: \(totalTime)")
+            case .failure(let error):
+                completion(nil, error)
+            }
+        }
+        
+    }
+    
+    func getDateForIndexPath(_ indexPath: IndexPath) -> Date {
+        let calendar = Calendar.current
+      
+        let day = Int(totalSquares[indexPath.item]) ?? 0
+    
+       
+        
+        // Create a DateComponents object with the given year, month, and day
+        var dateComponents = DateComponents()
+        dateComponents.year = currentYear
+        dateComponents.month = currentMonth
+        dateComponents.day = day
+        
+        // Convert the DateComponents object to a Date object
+        let dateForIndexPath = calendar.date(from: dateComponents)!
+        return dateForIndexPath
+    }
+
+    
+    func getWorkoutDurationForCell(for indexPath: IndexPath, completion: @escaping (Int?) -> Void) {
+        // Get the date for the indexPath
+        let date = getDateForIndexPath(indexPath)
+        //let dateComponents = DateComponents(year: currentYear, month: currentMonth, day: Int(totalSquares[indexPath.item]))
+        if let currentUser = User.current{
+            getCellDailyWorkoutTime(for: currentUser, date: date) { (timeString, error) in
+                if let duration = timeString {
+                    completion(duration)
+                } else {
+                    completion(nil)
+                }
+            }
+        }
+        
+      
+    }
+
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         totalSquares.count
     }
@@ -596,29 +677,53 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         cell.dayOfMonth.text = totalSquares[indexPath.item]
         cell.dayOfMonth.textColor = .white
         
-        
-        
-//        print("SIIII: \(selectedIndexPath)")
-//
-//        //set up text font
         let font = UIFont(name: "Verdana", size: 16) ?? UIFont.systemFont(ofSize: 16)
         let Bfont = UIFont(name: "Verdana-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
+       // print("initial selectedIndex: \(selectedIndexPath)")
         if selectedIndexPath == indexPath {
+            cell.layer.borderWidth = 2
+            cell.layer.borderColor = UIColor.white.cgColor
+            //UIColor(red: 56.0/255.0, green: 254.0/255.0, blue: 234.0/255.0, alpha: 1.0).cgColor
             cell.dayOfMonth.font = Bfont
         } else {
             cell.dayOfMonth.font = font
+            cell.layer.borderWidth = 0
         }
         
         //TODO: set backgound color corresonding to workout time
         if(totalSquares[indexPath.item] == ""){
             cell.backgroundColor =  UIColor(red: 235.0/255.0, green: 237.0/255.0, blue: 240.0/255.0, alpha: 0.0)
         }else{
-            if(indexPath == selectedIndexPath){
-                cell.backgroundColor = UIColor.red
-            }else{
-                //TODO: decide color here
-                cell.backgroundColor = UIColor.systemMint
-            }
+//            if(indexPath == selectedIndexPath){
+//                //cell.backgroundColor = UIColor.red
+//
+//            }else{
+                //TODO: get daily workout duration for each cell and decide background color based on duration
+                //0<t<=20, 20<t<=40, 40<t<=60, 60<t
+                //cell.backgroundColor = UIColor.systemMint
+                
+                getWorkoutDurationForCell(for: indexPath) { (duration) in
+                    if let duration = duration {
+                        if duration > 0 && duration <= 20 {
+                            let cellBackgroundColor1 = UIColor(red: 178.0/255.0, green: 223.0/255.0, blue: 219.0/255.0, alpha: 1.0)
+                            cell.backgroundColor = cellBackgroundColor1
+                        } else if duration > 20 && duration <= 40 {
+//                            let cellBackgroundColor2 = UIColor(red: 77.0/255.0, green: 181.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+                            cell.backgroundColor = UIColor(red: 14.0/255.0, green: 189.0/255.0, blue: 182.0/255.0, alpha: 1.0)
+                        } else if duration > 40 && duration <= 60 {
+                           // let cellBackgroundColor3 = UIColor(red: 0.0/255.0, green: 137.0/255.0, blue: 123.0/255.0, alpha: 1.0)
+                            cell.backgroundColor = UIColor(red: 42.0/255.0, green: 158.0/255.0, blue: 148.0/255.0, alpha: 1.0)
+                        } else if duration > 60 {
+                            cell.backgroundColor = UIColor(red: 9.0/255.0, green: 120.0/255.0, blue: 121.0/255.0, alpha: 1.0)
+                        }else { //<=0
+
+                            cell.backgroundColor = UIColor(red: 239.0/255.0, green: 239.0/255.0, blue: 239.0/255.0, alpha: 0.5)
+                        }
+                    }else {//empty
+                        cell.backgroundColor =  UIColor(red: 244.0/255.0, green: 210.0/255.0, blue: 203.0/255.0, alpha: 1.0)
+                    }
+                }
+           // }
             
            
         }
@@ -646,7 +751,8 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         // Deselect previously selected cell, if any
         if let previousSelectedIndexPath = selectedIndexPath {
             let previousSelectedCell = collectionView.cellForItem(at: previousSelectedIndexPath) as? CalendarCell
-            previousSelectedCell?.backgroundColor = UIColor.systemMint // Set to default background color
+           // previousSelectedCell?.backgroundColor = UIColor.systemMint // Set to default background color
+            previousSelectedCell?.layer.borderWidth = 0
             previousSelectedCell?.dayOfMonth.font = font
         }
         
@@ -662,12 +768,16 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
 
         // Set the background color for the newly selected cell
         let selectedCell = collectionView.cellForItem(at: indexPath) as? CalendarCell
-        selectedCell?.backgroundColor = UIColor.red // Set to selected background color
+        //selectedCell?.backgroundColor = UIColor.red // Set to selected background color
+        selectedCell?.layer.borderWidth = 2
+        selectedCell?.layer.borderColor = UIColor.white.cgColor
+        //UIColor(red: 56.0/255.0, green: 254.0/255.0, blue: 234.0/255.0, alpha: 1.0).cgColor
         let Bfont = UIFont(name: "Verdana-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
         selectedCell?.dayOfMonth.font = Bfont
+        
         // Save the index path of the selected cell
         selectedIndexPath = indexPath
-        
+        selectedDay = Int(totalSquares[selectedIndexPath!.item ]) ?? 0
         //collectionView.reloadData()
     }
 
@@ -700,11 +810,42 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     //some button funtions
+    
+    func updateSelectedIndexPath() {
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        dateComponents.year = currentYear
+        dateComponents.month = currentMonth
+        dateComponents.day = selectedDay
+
+        if let date = calendar.date(from: dateComponents) {
+            let newIndexPath = indexPathForDate(date)
+            if newIndexPath != nil {
+                selectedIndexPath = newIndexPath!
+            }
+        }
+    }
+    
+    func indexPathForDate(_ date: Date) -> IndexPath? {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+
+        if let day = components.day,
+           let index = totalSquares.firstIndex(where: { Int($0) == day }) {
+            return IndexPath(item: index, section: 0)
+        }
+
+        return nil
+    }
+
+
+    
     @IBAction func previousMonth(_ sender: Any) {
         selectedDate = CalendarHelper().minusMonth(date: selectedDate)
         setMonthView()
         updateWorkoutData()
         updateCheckinTimes()
+        updateSelectedIndexPath()
     }
     
     @IBAction func nextMonth(_ sender: Any) {
@@ -712,6 +853,7 @@ class PlayGroundViewController: UIViewController, UICollectionViewDelegate, UICo
         setMonthView()
         updateWorkoutData()
         updateCheckinTimes()
+        updateSelectedIndexPath()
     }
     
     override open var shouldAutorotate: Bool{

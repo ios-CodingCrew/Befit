@@ -658,7 +658,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="55" height="34.333333333333336"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="arrowshape.left.fill" catalog="system">
-                                            <color key="baseForegroundColor" red="0.85181874040000005" green="0.64480167629999996" blue="0.62257713079999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="baseForegroundColor" red="0.054901960784313725" green="0.74117647058823533" blue="0.71372549019607845" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </buttonConfiguration>
                                         <connections>
                                             <action selector="previousMonth:" destination="fLD-6X-15a" eventType="touchUpInside" id="yY0-q0-W8P"/>
@@ -669,7 +669,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content="April 2023">
                                                 <attributes>
-                                                    <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="0.054249934850000001" green="0.74199014900000004" blue="0.71249616149999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <font key="NSFont" size="18" name="Impact"/>
                                                 </attributes>
                                             </fragment>
@@ -680,7 +680,7 @@
                                         <rect key="frame" x="220.33333333333331" y="0.0" width="51" height="34.333333333333336"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="arrowshape.right.fill" catalog="system">
-                                            <color key="baseForegroundColor" red="0.85181874040000005" green="0.64480167629999996" blue="0.62257713079999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="baseForegroundColor" red="0.054249934850000001" green="0.74199014900000004" blue="0.71249616149999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </buttonConfiguration>
                                         <connections>
                                             <action selector="nextMonth:" destination="fLD-6X-15a" eventType="touchUpInside" id="67K-gN-4j6"/>
@@ -700,7 +700,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content="Sun">
                                                 <attributes>
-                                                    <color key="NSColor" red="0.0048749926499999999" green="0.62471055980000001" blue="0.59482359890000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <font key="NSFont" size="17" name="Impact"/>
                                                 </attributes>
                                             </fragment>
@@ -724,7 +724,7 @@
                                         <attributedString key="attributedText">
                                             <fragment content="Tue">
                                                 <attributes>
-                                                    <color key="NSColor" red="0.98039215800000001" green="0.98039215800000001" blue="0.98039215800000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <font key="NSFont" size="17" name="Impact"/>
                                                 </attributes>
                                             </fragment>
@@ -829,7 +829,7 @@
                                     <segment title="Yearly"/>
                                 </segments>
                                 <color key="tintColor" systemColor="systemMintColor"/>
-                                <color key="selectedSegmentTintColor" red="0.82428944110000002" green="0.65219175819999997" blue="0.6263450384" alpha="0.95216450470172809" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="selectedSegmentTintColor" red="0.16504535079999999" green="0.62076568600000004" blue="0.57858932019999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
                                     <action selector="timeSegmentChanged:" destination="fLD-6X-15a" eventType="valueChanged" id="ZcX-OF-Dnd"/>
                                 </connections>
@@ -998,6 +998,7 @@
                                             <constraint firstAttribute="width" constant="180" id="dao-LN-uwh"/>
                                             <constraint firstAttribute="height" constant="57" id="eFg-JX-V6K"/>
                                         </constraints>
+                                        <color key="tintColor" red="0.054901960784313725" green="0.74117647058823533" blue="0.71372549019607845" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="filled">
                                             <attributedString key="attributedTitle">
@@ -1009,6 +1010,7 @@
                                                     </attributes>
                                                 </fragment>
                                             </attributedString>
+                                            <color key="baseBackgroundColor" systemColor="systemMintColor"/>
                                         </buttonConfiguration>
                                         <connections>
                                             <action selector="toTrack:" destination="fLD-6X-15a" eventType="touchUpInside" id="hd5-zu-gaP"/>
@@ -1173,7 +1175,7 @@
             </objects>
             <point key="canvasLocation" x="2015" y="727"/>
         </scene>
-        <!--Track My Activity-->
+        <!--Track Activity View Controller-->
         <scene sceneID="iGN-fC-5mo">
             <objects>
                 <viewController storyboardIdentifier="TrackactPage" id="3Cc-7P-gXA" customClass="TrackActivityViewController" customModule="BeFit" customModuleProvider="target" sceneMemberID="viewController">
@@ -1181,6 +1183,60 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bg111" translatesAutoresizingMaskIntoConstraints="NO" id="vqi-hI-gUy">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.34999999999999998" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="uyD-cu-rRN">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <color key="backgroundColor" systemColor="opaqueSeparatorColor"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f1J-dq-jes">
+                                <rect key="frame" x="16" y="103" width="321" height="132"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="IGNITE">
+                                        <attributes>
+                                            <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="90" name="Impact"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content="🔥">
+                                        <attributes>
+                                            <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                            <font key="NSFont" size="90" name="AppleColorEmoji"/>
+                                            <font key="NSOriginalFont" size="90" name="Impact"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                                <size key="shadowOffset" width="0.0" height="0.0"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QBh-R7-Ww9">
+                                <rect key="frame" x="37" y="214" width="356" height="73"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Your JOURNEY ">
+                                        <attributes>
+                                            <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="64" name="Impact"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Clc-6f-GLt">
+                                <rect key="frame" x="8" y="295" width="337" height="137"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="HERE">
+                                        <attributes>
+                                            <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <font key="NSFont" size="144" name="Impact"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="41" translatesAutoresizingMaskIntoConstraints="NO" id="3dD-09-DUd">
                                 <rect key="frame" x="56" y="485" width="281" height="263"/>
                                 <subviews>
@@ -1236,13 +1292,33 @@
                         <viewLayoutGuide key="safeArea" id="REb-oJ-xvY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="uyD-cu-rRN" firstAttribute="top" secondItem="FKf-ou-7aF" secondAttribute="top" id="1W8-WD-Zhs"/>
+                            <constraint firstItem="vqi-hI-gUy" firstAttribute="trailing" secondItem="REb-oJ-xvY" secondAttribute="trailing" id="56Y-7f-3Q6"/>
+                            <constraint firstAttribute="bottom" secondItem="uyD-cu-rRN" secondAttribute="bottom" id="BIH-sv-QLV"/>
+                            <constraint firstItem="Clc-6f-GLt" firstAttribute="top" secondItem="REb-oJ-xvY" secondAttribute="top" constant="192" id="D8O-eI-yyS"/>
+                            <constraint firstItem="REb-oJ-xvY" firstAttribute="bottom" secondItem="f1J-dq-jes" secondAttribute="bottom" constant="583" id="G7r-3Z-ava"/>
+                            <constraint firstItem="QBh-R7-Ww9" firstAttribute="trailing" secondItem="REb-oJ-xvY" secondAttribute="trailing" id="HyM-SK-Phj"/>
+                            <constraint firstItem="f1J-dq-jes" firstAttribute="top" secondItem="REb-oJ-xvY" secondAttribute="top" id="Ia7-sX-j4a"/>
+                            <constraint firstItem="vqi-hI-gUy" firstAttribute="top" secondItem="FKf-ou-7aF" secondAttribute="top" id="OgI-cl-ZYL"/>
+                            <constraint firstItem="REb-oJ-xvY" firstAttribute="trailing" secondItem="Clc-6f-GLt" secondAttribute="trailing" constant="48" id="VZK-uT-az8"/>
+                            <constraint firstItem="REb-oJ-xvY" firstAttribute="bottom" secondItem="QBh-R7-Ww9" secondAttribute="bottom" constant="531" id="Wz3-Z1-1wS"/>
+                            <constraint firstItem="vqi-hI-gUy" firstAttribute="leading" secondItem="REb-oJ-xvY" secondAttribute="leading" id="Y6u-D7-bUn"/>
+                            <constraint firstItem="uyD-cu-rRN" firstAttribute="trailing" secondItem="REb-oJ-xvY" secondAttribute="trailing" id="Yd3-Mn-Llh"/>
                             <constraint firstItem="3dD-09-DUd" firstAttribute="top" secondItem="REb-oJ-xvY" secondAttribute="top" constant="382" id="aDQ-8L-aKy"/>
+                            <constraint firstItem="REb-oJ-xvY" firstAttribute="trailing" secondItem="f1J-dq-jes" secondAttribute="trailing" constant="56" id="cDI-X2-2da"/>
                             <constraint firstItem="REb-oJ-xvY" firstAttribute="trailing" secondItem="3dD-09-DUd" secondAttribute="trailing" constant="56" id="e6X-Co-5S0"/>
+                            <constraint firstItem="f1J-dq-jes" firstAttribute="leading" secondItem="REb-oJ-xvY" secondAttribute="leading" constant="16" id="fYR-9n-65E"/>
+                            <constraint firstItem="uyD-cu-rRN" firstAttribute="leading" secondItem="REb-oJ-xvY" secondAttribute="leading" id="ljE-Js-4ep"/>
+                            <constraint firstItem="REb-oJ-xvY" firstAttribute="bottom" secondItem="Clc-6f-GLt" secondAttribute="bottom" constant="386" id="nRc-V7-sFF"/>
+                            <constraint firstAttribute="bottom" secondItem="vqi-hI-gUy" secondAttribute="bottom" id="pSa-51-Z7l"/>
+                            <constraint firstItem="Clc-6f-GLt" firstAttribute="leading" secondItem="REb-oJ-xvY" secondAttribute="leading" constant="8" id="qH0-Uo-H7x"/>
+                            <constraint firstItem="QBh-R7-Ww9" firstAttribute="leading" secondItem="REb-oJ-xvY" secondAttribute="leading" constant="37" id="rcK-nw-onZ"/>
+                            <constraint firstItem="QBh-R7-Ww9" firstAttribute="top" secondItem="REb-oJ-xvY" secondAttribute="top" constant="111" id="sFF-rp-PcS"/>
                             <constraint firstItem="3dD-09-DUd" firstAttribute="leading" secondItem="REb-oJ-xvY" secondAttribute="leading" constant="56" id="tkK-ZB-6lr"/>
                             <constraint firstItem="REb-oJ-xvY" firstAttribute="bottom" secondItem="3dD-09-DUd" secondAttribute="bottom" constant="70" id="yVB-dd-Wlk"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Track My Activity" id="En0-VU-kir"/>
+                    <navigationItem key="navigationItem" id="En0-VU-kir"/>
                     <connections>
                         <outlet property="calInput" destination="bZW-6P-t2z" id="34U-hx-pk9"/>
                         <outlet property="popupButton" destination="B0K-xD-uAY" id="99t-bi-eag"/>
@@ -1295,6 +1371,7 @@
     <resources>
         <image name="arrowshape.left.fill" catalog="system" width="128" height="104"/>
         <image name="arrowshape.right.fill" catalog="system" width="128" height="104"/>
+        <image name="bg111" width="4016" height="6016"/>
         <image name="cover" width="624" height="1110"/>
         <image name="happy" width="306" height="313"/>
         <image name="xmark.circle.fill" catalog="system" width="128" height="123"/>
