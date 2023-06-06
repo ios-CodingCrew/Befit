@@ -114,7 +114,7 @@ GIF created with Kap
 [ScreenToGif](https://www.screentogif.com/) for Windows
 [peek](https://github.com/phw/peek) for Linux. -->
 
-### [BONUS] Interactive Prototype
+<!-- ### [BONUS] Interactive Prototype
 
 ## Schema 
 [This section will be completed in Unit 9]
@@ -124,4 +124,4 @@ GIF created with Kap
 ### Networking
 - [Add list of network requests by screen ]
 - [Create basic snippets for each Parse network request]
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
+- [OPTIONAL: List endpoints if using existing API such as Yelp] -->
