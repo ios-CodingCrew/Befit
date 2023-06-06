@@ -93,13 +93,12 @@ This fitness app will help users track their workout and body weight: when they 
     * ->log in
 
 ## Wireframes
-[Add picture of your hand sketched wireframes in this section]
-<!--<img src="https://i.imgur.com/8WUeWnT.png" width=600>-->
-https://www.figma.com/file/BuTdlUAZ9LUVjFc4pOFJiF/BeFit-Wireframe?node-id=0-1
+<!--[Add picture of your hand sketched wireframes in this section]
+<img src="https://i.imgur.com/8WUeWnT.png" width=600>
+https://www.figma.com/file/BuTdlUAZ9LUVjFc4pOFJiF/BeFit-Wireframe?node-id=0-1 -->
 
 
-
-### [BONUS] Digital Wireframes & Mockups
+### Digital Wireframes & Mockups
 ![](https://i.imgur.com/NPcvvQY.png)
 
 ## Video Walkthrough
