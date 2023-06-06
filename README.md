@@ -94,7 +94,7 @@ This fitness app will help users track their workout and body weight: when they 
 
 ## Wireframes
 [Add picture of your hand sketched wireframes in this section]
-<img src="https://i.imgur.com/8WUeWnT.png" width=600>
+<!--<img src="https://i.imgur.com/8WUeWnT.png" width=600>-->
 https://www.figma.com/file/BuTdlUAZ9LUVjFc4pOFJiF/BeFit-Wireframe?node-id=0-1
 
 
